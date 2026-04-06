@@ -1,11 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Star Sports 1 Telugu </title>
+<title>Star Sports // Dillzy </title>
 <meta name="referrer" content="no-referrer">
+
 <script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css"/>
 
@@ -41,7 +41,6 @@ font-weight:600;
 color:rgba(255,255,255,0.12);
 }
 
-/* --- Updated Modern Blocker Styles --- */
 .block-overlay{
 position:fixed;
 inset:0;
@@ -86,10 +85,6 @@ color:rgba(255, 255, 255, 0.6);
 line-height:1.6;
 }
 
-/* Icon hidden as requested, but keeping structure if needed later */
-.block-icon{ display: none; }
-.block-note{ display: none; }
-
 @media(max-width:700px){
 .custom-watermark{font-size:9px;top:60%;left:16%}
 .block-title{font-size:28px}
@@ -98,16 +93,17 @@ line-height:1.6;
 }
 </style>
 </head>
+
 <body>
 
 <div class="shaka-video-container" id="player-container">
 <video id="video" autoplay muted playsinline preload="metadata"></video>
-<div class="custom-watermark"> </div>
+<div class="custom-watermark"></div>
 </div>
 
 <script>
 (function(){
-  
+
   function isSandboxedEnv(){
     try {
       if (window.self === window.top) return false;
@@ -127,10 +123,11 @@ line-height:1.6;
       return true;
     }
   }
+
   function triggerBlockScreen(title, message){
     const container = document.getElementById("player-container");
     const video = document.getElementById("video");
-    
+
     try {
       video.pause();
       video.removeAttribute('src');
@@ -139,7 +136,6 @@ line-height:1.6;
 
     const overlay = document.createElement("div");
     overlay.className = "block-overlay";
-    overlay.id = "sandbox-block-display";
     overlay.innerHTML = `
       <div class="block-box">
         <div class="block-title">${title}</div>
@@ -149,11 +145,12 @@ line-height:1.6;
     document.body.appendChild(overlay);
     container.style.display = 'none';
   }
-  if(isSandboxedEnv()){
 
+  if(isSandboxedEnv()){
     triggerBlockScreen('Disable Sandbox', 'Opening Chrome Browser Only & Disable Ad blocker');
     return;
   }
+
   const CONFIG={
     streamUrl:"https://jiotvioslive.cdn.jio.com/bpk-tv/Star_Sports_1_Telugu_HD_BTS/output/index.mpd",
     keyId:"49e84b9edfd85379b90c81b7d2d3d2bf",
@@ -169,75 +166,33 @@ line-height:1.6;
     const video=document.getElementById("video");
     const container=document.getElementById("player-container");
 
-    video.muted=true;
-
     const player=new shaka.Player();
     await player.attach(video);
 
     const ui=new shaka.ui.Overlay(player,container,video);
 
     ui.configure({
-  addBigPlayButton: true,
-  controlPanelElements: [
-    "mute",
-    "play_pause",
-    "time_and_duration",
-    "spacer",
-    "quality",
-    "picture_in_picture",
-    "fullscreen"
-  ],
-  seekBarColors: {
-    base: "white",
-    buffered: "red", 
-    played: "green"
-  }
-});
+      addBigPlayButton: true,
+      controlPanelElements: [
+        "mute",
+        "play_pause",
+        "time_and_duration",
+        "spacer",
+        "quality",
+        "picture_in_picture",
+        "fullscreen"
+      ]
+    });
 
     player.configure({
       drm:{clearKeys:{[CONFIG.keyId]:CONFIG.key}},
-      manifest:{defaultPresentationDelay:5},
-      streaming:{
-        lowLatencyMode:true,
-        bufferingGoal:10,
-        rebufferingGoal:2,
-        safeSeekOffset:5
-      }
+      streaming:{lowLatencyMode:true}
     });
-
-    let cookieValue="";
-
-    try{
-      const response=await fetch(CONFIG.cookieUrl,{cache:"no-store"});
-      const data=await response.json();
-      cookieValue=data.cookie||"";
-    }catch(e){}
-
-    if(cookieValue){
-      player.getNetworkingEngine().registerRequestFilter((type,request)=>{
-        request.headers["Referer"]="https://www.jiotv.com/";
-        request.headers["User-Agent"]="plaYtv/7.1.5 (Linux;Android 13) ExoPlayerLib/2.11.6";
-        request.headers["Cookie"]=cookieValue;
-
-        let urlCookie=cookieValue.startsWith("__hdnea__=")?cookieValue.substring(10):cookieValue;
-
-        if((type===shaka.net.NetworkingEngine.RequestType.MANIFEST||
-        type===shaka.net.NetworkingEngine.RequestType.SEGMENT)&&
-        !request.uris[0].includes("__hdnea__")){
-          const sep=request.uris[0].includes("?")?"&":"?";
-          request.uris[0]+=sep+"__hdnea__="+urlCookie;
-        }
-      });
-    }
 
     try{
       await player.load(CONFIG.streamUrl);
-      video.play().catch(()=>{});
+      video.play();
     }catch(e){}
-
-    video.addEventListener("play",()=>{
-      video.muted=false;
-    });
 
   });
 })();
@@ -245,4 +200,3 @@ line-height:1.6;
 
 </body>
 </html>
-
